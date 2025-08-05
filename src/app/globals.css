@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #111111;
+  --secondary: #191919;
+  --background: #090909;
+  --accent: #2c1a75;
+  --text: #eeeeee;
+  --text-hover: #a89fff;
+  --border: #2b343b;
+  --button: #6347ea;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+}
+
+/* React Datepicker styles */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border);
+  background-color: var(--primary);
+}
+
+/* Kanban column styles */
+.kanban-column {
+  background-color: var(--primary);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1rem;
+  min-height: 200px;
+}
+
+Link,
+button {
+  cursor: pointer;
+}
