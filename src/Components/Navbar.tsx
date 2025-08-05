@@ -22,10 +22,8 @@ const Navbar = () => {
   // Handle dropdown item clicks
   const handleItemClick = (action: string) => {
     setIsDropdownOpen(false);
-    if (action === "profile") {
-      router.push("/user/profile");
-    } else if (action === "signout") {
-      router.push("/auth?form=login");
+    if (action === "signout") {
+      router.push("/auth/login");
     }
   };
 
@@ -69,7 +67,7 @@ const Navbar = () => {
   return (
     <>
       {/* MOBILE, TABLET */}
-      <div className="sticky top-0 w-full bg-[var(--primary)] p-4 md:p-6 lg:p-7 z-30 gap-4 xl:hidden flex flex-col light-shadow">
+      <div className="sticky top-0 w-full border-b border-[var(--border)] bg-[var(--primary)] p-4 md:p-6 lg:p-7 z-30 gap-4 xl:hidden flex flex-col light-shadow">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <h2 className=" text-2xl md:text-3xl font-semibold text-[var(--text)]">
             Good Evening, <span>User</span>
@@ -128,7 +126,7 @@ const Navbar = () => {
       </div>
 
       {/* DESKTOP */}
-      <div className="sticky top-0  h-fit w-full bg-[var(--primary)] p-6 2xl:p-7 z-30 gap-7 2xl:gap-0 hidden xl:flex items-center justify-between light-shadow">
+      <div className="sticky top-0 border-b border-[var(--border)] h-fit w-full bg-[var(--primary)] p-6 2xl:p-7 z-30 gap-7 2xl:gap-0 hidden xl:flex items-center justify-between light-shadow">
         <h2 className=" text-2xl md:text-3xl font-semibold ">
           Good Evening, <span>User</span>
         </h2>

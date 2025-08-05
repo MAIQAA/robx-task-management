@@ -25,10 +25,8 @@ const Sidebar = () => {
             <Link
               key={item.id}
               href={item.link}
-              className={`w-full flex items-center font-medium text-lg xl:text-xl gap-2 2xl:gap-4 px-4 2xl:px-6 py-4 rounded-2xl hover:bg-[var(--accent)] hover:text-[var(--text-hover)] transition-colors ${
-                isActive
-                  ? "bg-[var(--accent)] text-[var(--text-hover)] "
-                  : "bg-transparent"
+              className={`w-full flex items-center font-medium text-lg xl:text-xl gap-2 2xl:gap-4 px-4 2xl:px-6 py-4 rounded-2xl hover:bg-[var(--accent)] transition-colors ${
+                isActive ? "bg-[var(--button)]" : "bg-transparent"
               }`}
             >
               <item.imgSrc />

@@ -5,15 +5,17 @@
   --secondary: #191919;
   --background: #090909;
   --accent: #2c1a75;
+  --accent-secondary: #1d0736;
+  --accent-tertiary: #363536;
   --text: #eeeeee;
-  --text-hover: #a89fff;
   --border: #2b343b;
-  --button: #6347ea;
+  --button: #581a99;
 }
 
 body {
   background-color: var(--background);
   color: var(--text);
+  border-color: var(--border) !important;
 }
 
 /* React Datepicker styles */

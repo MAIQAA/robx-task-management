@@ -55,8 +55,6 @@ export default function TasksPage() {
     "Done",
   ];
 
- 
-
   // Format the current date
   const currentDate = new Date();
   const options: Intl.DateTimeFormatOptions = {
@@ -71,10 +69,10 @@ export default function TasksPage() {
 
   return (
     <div className="space-y-10 p-6">
-      <div className="w-full flex flex-col lg:flex-row items-start lg:items-center gap-6 justify-between">
+      <div className="w-full flex flex-col lg:flex-row items-start lg:items-center gap-6 justify-between overflow-x-hidden">
         {/* Current Date */}
         <div className="flex flex-col items-start justify-start">
-          <span className="text-xl font-bold text-[var(--dark)]">
+          <span className="text-xl font-bold">
             {currentDate.toLocaleString("en-US", { month: "long" })}
           </span>
           <span className="font-medium text-[var(--dark)]">
@@ -104,7 +102,7 @@ export default function TasksPage() {
             {/* Invite Member Button */}
             <button
               onClick={() => setIsAddMemberOpen(true)}
-              className="flex items-center px-4 py-2 border border-[var(--button)] text-sm lg:text-base text-[var(--button)] rounded-lg hover:bg-[var(--button)] hover:text-[var(--text)] transition"
+              className="flex items-center px-4 py-2 border border-[var(--text)] text-sm lg:text-base text-[var(--text)] rounded-lg transition"
             >
               <FaPlus className="mr-2" /> Invite Member
             </button>
@@ -112,7 +110,7 @@ export default function TasksPage() {
             {/* Create Task Button */}
             <button
               onClick={() => setIsFormOpen(true)}
-              className="flex items-center px-4 py-2 border bg-[var(--button)] text-sm lg:text-base text-[var(--text)] rounded-lg border-[var(--button)] hover:bg-transparent hover:text-[var(--button)] transition"
+              className="flex items-center px-4 py-2 border bg-[var(--button)] text-sm lg:text-base text-[var(--text)] rounded-lg border-[var(--button)] transition"
             >
               <FaPlus className="mr-2" /> Create Task
             </button>
