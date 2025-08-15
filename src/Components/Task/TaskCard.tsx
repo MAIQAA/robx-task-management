@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -14,6 +13,7 @@ interface TaskCardProps {
   onDelete: (id: string) => void;
 }
 
+
 export default function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -24,17 +24,24 @@ export default function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
     urgent: "bg-red-500",
   };
 
-  const statusColors = {
-    "To Do": "bg-pink-400",
-    "In Progress": "bg-purple-400",
-    "Need Review": "bg-orange-400",
-    Done: "bg-green-400",
-  };
+ const statusColors = {
+  "to-do": "bg-pink-400",
+  "in-progress": "bg-purple-400",
+  "need-review": "bg-orange-400",
+  done: "bg-green-400",
+};
 
-  const handleUpdate = (updatedTask: Task | Omit<Task, "id">) => {
-    onUpdate({ ...updatedTask, id: task.id } as Task);
-    setIsEditing(false);
-  };
+
+const handleUpdate = (updatedTask: Partial<Task>) => {
+  onUpdate({
+    ...task,
+    ...updatedTask,
+    id: task.id, 
+    assignedTo: updatedTask.assignedTo ?? task.assignedTo,
+    comments: updatedTask.comments ?? task.comments ?? "",
+  });
+  setIsEditing(false);
+};
 
   const assignedIndex = ACCOUNTS.indexOf(task.assignedTo);
   const assignedColor = COLORS[assignedIndex % COLORS.length] || COLORS[0];
@@ -85,10 +92,10 @@ export default function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
                 }}
                 className={`w-8 h-8 border rounded-full text-[var(--text)] flex items-center justify-center text-sm font-medium bg-opacity-50 -ml-2`}
               >
-                {task.assignedTo.charAt(0).toUpperCase()}
+{task.assignedUser?.name?.charAt(0)?.toUpperCase()}
               </div>
               <div className="absolute hidden group-hover:block bg-[var(--primary)] text-[var(--text)] text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2">
-                {task.assignedTo}
+{task.assignedUser?.name || 'Unassigned'}
               </div>
             </div>
             <p className="text-xs font-medium text-[var(--text)]">
@@ -104,11 +111,12 @@ export default function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
         </div>
       </div>
       <Modal isOpen={isEditing} onClose={() => setIsEditing(false)}>
-        <TaskForm
-          task={task}
-          onSubmit={handleUpdate}
-          onCancel={() => setIsEditing(false)}
-        />
+     <TaskForm
+    taskId={task.id}
+    onSubmit={handleUpdate}
+    onCancel={() => setIsEditing(false)}
+  />
+
       </Modal>
     </>
   );

@@ -4,23 +4,27 @@ import React, { useState } from "react";
 import { FaUser, FaEnvelope } from "react-icons/fa";
 import { BiSolidLock } from "react-icons/bi";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import Link from "next/link";
 import { redirect } from "next/navigation";
+import { registerUser, SignUpPayload } from "@/utils/signup";
+import { useRouter } from "next/navigation";
+import { FaUserShield } from "react-icons/fa";
 
 const SignUp = () => {
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const router = useRouter();
+
+  const [role, setRole] = useState<"admin" | "author" | "superadmin">("author");
   const [seePass, setSeePass] = useState<"text" | "password">("password");
   const [seeConfirmPass, setSeeConfirmPass] = useState<"text" | "password">(
     "password"
   );
   const [error, setError] = useState<{
-    fullName?: string;
-    email?: string;
+    username?: string;
     password?: string;
     confirmpassword?: string;
+    role?: string;
   }>({});
   const [passwordStrength, setPasswordStrength] = useState(0);
 
@@ -44,24 +48,19 @@ const SignUp = () => {
     e.preventDefault();
     setError({});
 
-    if (!fullName) return setError({ fullName: "Full Name is required" });
-    if (!email) return setError({ email: "Email is required" });
-    if (!password) return setError({ password: "Password is required" });
-    if (!confirmPassword)
-      return setError({ confirmpassword: "Confirm your password" });
-    if (!isValidPassword(password))
-      return setError({
-        password:
-          "Password must be at least 8 characters and include uppercase, lowercase, number, and symbol",
-      });
-    if (password !== confirmPassword)
-      return setError({ confirmpassword: "Passwords do not match" });
+    const payload: SignUpPayload = { username, password, role };
 
     try {
-      redirect("/auth/login");
-    } catch (error) {
-      console.error("Registration error:", error);
-      setError({ email: "An error occurred. Please try again." });
+      await registerUser(payload);
+      router.push("/auth/login");
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        console.error("Signup error:", err);
+        setError({ username: err.message || "An error occurred. Try again." });
+      } else {
+        console.error("Unknown error:", err);
+        setError({ username: "An unknown error occurred. Try again." });
+      }
     }
   };
 
@@ -73,51 +72,54 @@ const SignUp = () => {
           Create an Account
         </h2>
         <form onSubmit={submitForm} className="space-y-6">
+          {/* Username */}
           <div className="space-y-2 text-left">
             <label className="flex items-center gap-2 text-[var(--neutral)]">
-              <FaUser className="w-4 h-4" /> Full Name
+              <FaUser className="w-4 h-4" /> Username
             </label>
-            <div className="relative group">
-              <input
-                type="text"
-                placeholder="Enter your Full Name"
-                className="w-full p-3 border border-[var(--button)] rounded-md focus:outline-none focus:ring-2 ring-[var(--button)]/50 text-[var(--dark)]"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-              {error.fullName && (
-                <div className="absolute hidden group-hover:block bg-[var(--dark)] text-[var(--neutral)] text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2">
-                  {error.fullName}
-                </div>
-              )}
+            <input
+              type="text"
+              placeholder="Enter username"
+              className="w-full p-3 border border-[var(--button)] rounded-md focus:outline-none focus:ring-2 ring-[var(--button)]/50 text-[var(--dark)]"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            {error.username && (
+              <div className="text-red-500 text-xs">{error.username}</div>
+            )}
+          </div>
+
+          {/* Role */}
+          <div className="space-y-2 text-left relative">
+            <label className="text-[var(--neutral)] flex items-center gap-2">
+              <FaUserShield className="w-4 h-4" /> Role
+            </label>
+            <div className="relative">
+              <select
+                className="w-full p-3 pl-10 border border-[var(--button)] rounded-md 
+                 bg-[#18062C] text-[var(--neutral)] 
+                 focus:outline-none focus:ring-2 focus:ring-[var(--button)]/50 
+                 appearance-none"
+                value={role}
+                onChange={(e) =>
+                  setRole(e.target.value as "admin" | "author" | "superadmin")
+                }
+              >
+                <option value="admin">Admin</option>
+                <option value="author">Author</option>
+                <option value="superadmin">Super Admin</option>
+              </select>
+              {/* Icon inside the input */}
+              <FaUserShield className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--neutral)]" />
             </div>
           </div>
 
-          <div className="space-y-2 text-left">
-            <label className="flex items-center gap-2 text-[var(--neutral)]">
-              <FaEnvelope className="w-4 h-4" /> Email Address
-            </label>
-            <div className="relative group">
-              <input
-                type="email"
-                placeholder="Enter your Email"
-                className="w-full p-3 border border-[var(--button)] rounded-md focus:outline-none focus:ring-2 ring-[var(--button)]/50 text-[var(--dark)]"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              {error.email && (
-                <div className="absolute hidden group-hover:block bg-[var(--dark)] text-[var(--neutral)] text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2">
-                  {error.email}
-                </div>
-              )}
-            </div>
-          </div>
-
+          {/* Password */}
           <div className="space-y-2 text-left">
             <label className="flex items-center gap-2 text-[var(--neutral)]">
               <BiSolidLock className="w-5 h-5" /> Password
             </label>
-            <div className="relative group">
+            <div className="relative">
               <input
                 type={seePass}
                 placeholder="Create Password"
@@ -142,18 +144,17 @@ const SignUp = () => {
                 )}
               </button>
               {error.password && (
-                <div className="absolute hidden group-hover:block bg-[var(--dark)] text-[var(--neutral)] text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2">
-                  {error.password}
-                </div>
+                <div className="text-red-500 text-xs">{error.password}</div>
               )}
             </div>
           </div>
 
+          {/* Confirm Password */}
           <div className="space-y-2 text-left">
             <label className="flex items-center gap-2 text-[var(--neutral)]">
               <BiSolidLock className="w-5 h-5" /> Confirm Password
             </label>
-            <div className="relative group">
+            <div className="relative">
               <input
                 type={seeConfirmPass}
                 placeholder="Confirm Password"
@@ -177,13 +178,14 @@ const SignUp = () => {
                 )}
               </button>
               {error.confirmpassword && (
-                <div className="absolute hidden group-hover:block bg-[var(--dark)] text-[var(--neutral)] text-xs rounded py-1 px-2 -top-8 left-1/2 transform -translate-x-1/2">
+                <div className="text-red-500 text-xs">
                   {error.confirmpassword}
                 </div>
               )}
             </div>
           </div>
 
+          {/* Password Strength */}
           {password && (
             <div className="flex items-center gap-2 text-sm text-[var(--neutral)]">
               <span
@@ -221,12 +223,6 @@ const SignUp = () => {
             Sign Up
           </button>
         </form>
-        <span className="text-center mx-auto text-[var(--neutral)]">
-          Already have an Account?{" "}
-          <Link href="/auth/login" className="underline text-[var(--neutral)]">
-            Login
-          </Link>
-        </span>
       </section>
     </main>
   );

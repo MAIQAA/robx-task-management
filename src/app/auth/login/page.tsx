@@ -5,37 +5,51 @@ import { FaEnvelope } from "react-icons/fa";
 import { BiSolidLock } from "react-icons/bi";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { loginAdmin } from "@/utils/login"
+import { useRouter } from "next/navigation";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [seePass, setSeePass] = useState<"text" | "password">("password");
   const [error, setError] = useState<{ email?: string; password?: string }>({});
+  const router = useRouter();
 
-  const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError({});
+  
+const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  setError({});
 
-    if (!email) {
-      setError((prev) => ({ ...prev, email: "Email is required" }));
-      return;
-    }
-    if (!password) {
-      setError((prev) => ({ ...prev, password: "Password is required" }));
-      return;
+  if (!email) {
+    setError((prev) => ({ ...prev, email: "Email is required" }));
+    return;
+  }
+  if (!password) {
+    setError((prev) => ({ ...prev, password: "Password is required" }));
+    return;
+  }
+
+  try {
+    const data = await loginAdmin(email, password);
+    localStorage.setItem("token", data.token);
+      router.push("/user/dashboard");
+  } catch (err: unknown) {
+      console.error("Caught error during login:", err);
+
+    let message = "An error occurred. Please try again.";
+
+    if (err instanceof Error) {
+      message = err.message;
     }
 
-    try {
-      redirect("/user/dashboard");
-    } catch (error) {
-      console.error("Login error:", error);
-      setError((prev) => ({
-        ...prev,
-        email: "An error occurred. Please try again.",
-      }));
-    }
-  };
+    setError((prev) => ({
+      ...prev,
+      email: message,
+    }));
+  }
+};
+
 
   return (
     <main className="relative w-full min-h-screen flex items-center justify-between bg-[var(--accent-secondary)]">
@@ -47,12 +61,12 @@ const Login = () => {
         <form onSubmit={submitForm} className="space-y-6">
           <div className="space-y-2 text-left">
             <label className="flex items-center gap-2 text-[var(--neutral)]">
-              <FaEnvelope className="w-4 h-4" /> Email Address
+              <FaEnvelope className="w-4 h-4" /> Username
             </label>
             <div className="relative group">
               <input
-                type="email"
-                placeholder="Enter your Email"
+                type="text"
+                placeholder="Enter your Username"
                 className="w-full p-3 border border-[var(--button)] rounded-md focus:outline-none focus:ring-2 ring-[var(--button)]/50 text-[var(--dark)]"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
