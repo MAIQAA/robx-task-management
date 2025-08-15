@@ -192,7 +192,11 @@ export default function TasksPage({
       <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)}>
         <TaskForm
           onCancel={() => setIsFormOpen(false)}
-          onSubmit={(updatedTask) => {}}
+          onSubmit={(newTask) => {
+            setTasks((prev) => [...prev, newTask as Task]);
+            setIsFormOpen(false);
+          }}
+          refreshTasks={fetchTasks}
         />
       </Modal>
 

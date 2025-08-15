@@ -49,6 +49,7 @@ export default function TaskForm({
         );
         if (!res.ok) throw new Error("Failed to fetch users");
         const data: User[] = await res.json();
+        console.log("user",data)
         setUsers(data);
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -106,43 +107,51 @@ export default function TaskForm({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    try {
-      let updatedTask: Task;
-      if (taskId) {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/task/update/${taskId}`,
-          {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              /* formData values */
-            }),
-          }
-        );
-        updatedTask = await res.json();
-      } else {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/task/create`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({}),
-          }
-        );
-        updatedTask = await res.json();
-      }
+  e.preventDefault();
+  setSubmitting(true);
 
-      onSubmit(updatedTask);
-      refreshTasks?.();
-      onCancel();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSubmitting(false);
+  try {
+    const payload = {
+      title: formData.title,
+      description: formData.description,
+      userId: formData.assignedTo, 
+      dueDate: formData.dueDate,
+      priority: formData.priority,
+      status: formData.status,
+    };
+
+    let updatedTask: Task;
+    if (taskId) {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/task/update/${taskId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      updatedTask = await res.json();
+    } else {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/task/add`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
+      updatedTask = await res.json();
     }
-  };
+
+    onSubmit(updatedTask);
+    refreshTasks?.();
+    onCancel();
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <form
